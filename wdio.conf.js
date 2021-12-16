@@ -1,3 +1,4 @@
+const { removeSync, emptyDirSync } = require('fs-extra');
 const {
     addStep,
     addFeature,
@@ -7,64 +8,10 @@ const {
     addDescription,
     addEnvironment,
 } = require('@wdio/allure-reporter').default;
-// const maxInstances = 1;
-// const build = 'test build';
-// const bsLocal = false;
-// const idleTimeout = 180000;
-const bsCaps = [
-    {
-        'bstack:options': {
-            "os": "Windows",
-            "osVersion": "10",
-            "local": "false",
-            "seleniumVersion": "3.5.2",
-            "userName": process.env.USER,
-            "accessKey": process.env.KEY,
-        },
-        "browserName": "Edge",
-        "browserVersion": "latest-beta",
-    },
-    {
-        'bstack:options': {
-            "os": "Windows",
-            "osVersion": "10",
-            "local": "false",
-            "seleniumVersion": "3.5.2",
-            "userName": process.env.USER,
-            "accessKey": process.env.KEY,
-        },
-        "browserName": "Firefox",
-        "browserVersion": "latest-beta",
-    },
-    {
-        'bstack:options': {
-            "os": "OS X",
-            "osVersion": "Monterey",
-            "local": "false",
-            "seleniumVersion": "3.14.0",
-            "userName": process.env.USER,
-            "accessKey": process.env.KEY,
-        },
-        "browserName": "Safari",
-        "browserVersion": "15.0",
-    }
-];
 
-const localCaps = [{
-    maxInstances: 5,
-    browserName: 'chrome',
-    pageLoadStrategy: 'eager',
-    acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-        args: process.env.HL === '1' ? ['--headless'] : [],
-    }
-}]
-
-const bsServices = ['browserstack'];
-const localServices = ['chromedriver'];
 exports.config = {
-    user: process.env.USER,
-    key: process.env.KEY,
+    user: "max_Irk5La",
+    key: "xTQsBts7PxY6Fhmp7b7k",
     specs: [
         './specs/**/*.js'
     ],
@@ -73,7 +20,11 @@ exports.config = {
     ],
     automationProtocol: 'webdriver',
     maxInstances: 10,
-    capabilities: process.env.HUB === 'bs' ? bsCaps : localCaps,
+    capabilities: [{
+        maxInstances: 5,
+        browserName: 'chrome',
+        acceptInsecureCerts: true
+    }],
     // Level of logging verbosity: trace | debug | info | warn | error | silent
     logLevel: 'warn',
     bail: 0,
@@ -81,31 +32,11 @@ exports.config = {
     waitforTimeout: 10000,
     connectionRetryTimeout: 120000,
     connectionRetryCount: 3,
-    // services: process.env.HUB === 'bs' ? bsServices : localServices,
-    services: localServices,
+    services: [
+          'chromedriver'
+          //'browserstack' 
+    ],    
     framework: 'mocha',
-    cucumberOpts: {
-        scenarioLevelReporter: true,
-        retry: process.env.RETRY || 0,
-        backtrace: true,
-        // requireModule: ['@babel/register'],
-        failAmbiguousDefinitions: true,
-        failFast: false,
-        ignoreUndefinedDefinitions: false,
-        name: [],
-        snippets: true,
-        source: true,
-        profile: [],
-        require: [
-            './features/step_definitions/**/*.js',
-        ],
-        snippetSyntax: undefined,
-        strict: true,
-        tagExpression: 'not @Pending',
-        tagsInTitle: false,
-        timeout: process.env.DBG === '1' ? 600000 : 180000,
-    },
-
     //
     // The number of times to retry the entire specfile when it fails as a whole
     // specFileRetries: 1,
@@ -119,13 +50,16 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec',
-        ['allure', {
-            outputDir: 'allure-results',
-            disableWebdriverStepsReporting: true,
-            // disableWebdriverScreenshotsReporting: true,
-            useCucumberStepReporter: false,
-        }]],
+     reporters: [['allure', {outputDir: 'allure-results',
+     disableWebdriverStepsReporting: true,
+     disableWebdriverScreenshotsReporting: true,
+
+ }]],
+//reporters: [['allure', {outputDir: 'allure-results',
+//     disableWebdriverStepsReporting: true,
+//     disableWebdriverScreenshotsReporting: true,
+
+ //}]],
 
 
     // Options to be passed to Mocha.
@@ -147,8 +81,10 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-    // onPrepare: function (config, capabilities) {
-    // },
+    onPrepare: function (config, capabilities) {                
+        emptyDirSync('./screenshots');
+        //removeSync('.screenshots/1/');
+    },
     /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service
      * for that worker as well as modify runtime environments in an async fashion.
@@ -177,14 +113,8 @@ exports.config = {
      * @param {Array.<String>} specs        List of spec file paths that are to be run
      * @param {Object}         browser      instance of created browser/device session
      */
-    before: function (capabilities, specs) {
-
-    },
-    async beforeScenario(world) {
-        addEnvironment('SERVER', 'LOCAL');
-        addEnvironment('LOGGING', 'DISABLE');
-        addEnvironment('HEADLESS', 'FALSE');
-    },
+    // before: function (capabilities, specs) {
+    // },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
@@ -215,22 +145,6 @@ exports.config = {
      */
     // afterHook: function (test, context, { error, result, duration, passed, retries }) {
     // },
-
-    afterStep: function (step, scenario, result, context) {
-        // console.log({ step });
-        // console.log({ result });
-        // console.log({ scenario });
-        // console.log({ context });
-        if (step.keyword !== undefined) {
-            const content = {
-                content: '123',
-                name: 'name'
-            };
-            let status = result.passed ? 'passed' : 'failed';
-            addStep(step.keyword.toUpperCase() + step.text, content, status);
-        }
-    },
-
     /**
      * Function to be executed after a test (in Mocha/Jasmine only)
      * @param {Object}  test             test object
@@ -241,28 +155,22 @@ exports.config = {
      * @param {Boolean} result.passed    true if test has passed, otherwise false
      * @param {Object}  result.retries   informations to spec related retries, e.g. `{ attempts: 0, limit: 0 }`
      */
+
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            await browser.takeScreenshot();
+                const dat = new Date()
+                const sDate = dat.toDateString().replace(/\s/g,'_').toLowerCase(); 
+                const h = dat.getHours();
+                const min = dat.getMinutes(); 
+            const screen = await browser.saveScreenshot(`./screenshots/${sDate}_${h}-${min}_${test.title.replace(/\s/g,'_').toLowerCase()}.png`);
+            const html = await $('HTML').getHTML();
+            const cookies = JSON.stringify(await browser.getAllCookies())
+            addAttachment('screenshot_1', screen, 'image/png');
+            addAttachment('cookies', cookies, 'text/plain');
+            addAttachment('html_text', html, 'text/plain'); 
+            addAttachment('html_code', html, 'text/html');   
         }
     },
-
-    afterScenario: async (world, result, context) => {
-        if (world.result.status === 'SKIPPED') {
-            world.result.status = 'FAILED'
-        }
-        console.log({result})
-        console.log(result.passed)
-        console.log(result.passed)
-        console.log(result.passed)
-        addDescription('TESTTESTTEST!!! <script>alert(123)</script>')
-
-        if (!result.passed) {
-            addDescription('TESTTESTTEST!!!<img src="https://s.keepmeme.com/files/en_posts/20200908/blurred-surprised-cat-meme-5b734a45210ef3b6657bcbe2831715fa.jpg">')
-        }
-        // await browser.reloadSession();
-    },
-
     /**
      * Hook that gets executed after the suite has ended
      * @param {Object} suite suite details
@@ -306,10 +214,14 @@ exports.config = {
     // onComplete: function(exitCode, config, capabilities, results) {
     // },
     /**
-     * Gets executed when a refresh happens.
-     * @param {String} oldSessionId session ID of the old session
-     * @param {String} newSessionId session ID of the new session
-     */
+    * Gets executed when a refresh happens.
+    * @param {String} oldSessionId session ID of the old session
+    * @param {String} newSessionId session ID of the new session
+    */
     //onReload: function(oldSessionId, newSessionId) {
     //}
+    
+
+
+
 }
