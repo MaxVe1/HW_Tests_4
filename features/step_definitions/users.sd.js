@@ -134,9 +134,7 @@ Then("I check subscription with email: {string}", async function (email) {
      const userFromTable = await $(`//*[text()="${email}"]`).getText();   
      const planFromTable = await $(`//*[text()="${email}"]/../div[1]`).getText();
      const yearsFromTable = await $(`//*[text()="${email}"]/../div[3]`).getText();      
-     const descFromTable = await $(`//*[text()="${email}"]/../div[6]`).getText();
-     console.log('user from table : '+ planFromTable);
-     console.log('this user : '+ this.plan);
+     const descFromTable = await $(`//*[text()="${email}"]/../div[6]`).getText();    
      expect(this.user).toEqual(userFromTable);
      if(this.plan === "Education"){
         expect('EDU').toEqual(planFromTable);

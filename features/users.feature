@@ -76,4 +76,5 @@ Feature: Creation of User and Subscription
      """ 
      When I go to "List of Subscriptions" menu item
      Then I check subscription with email: "test2@test.com"
+     Then I logOut
      
