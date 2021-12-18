@@ -11,7 +11,6 @@ const {
     addDescription,
     addEnvironment,
 } = require('@wdio/allure-reporter').default;
-//const {Subscription} = require('../../page/subscription.po');
 const YAML = require('yaml'); 
 
 When('I go to url: {string}', async function (url) {
@@ -24,9 +23,7 @@ When('I login as: {string}, {string}', async function (login, password) {
 
 When('I go to {string} menu item',async function (item) {  
     
-    await Navigation.nav({item: item}) 
-    
-    //await $(`=${item}`).click();
+    await Navigation.nav({item: item});    
     await browser.pause(1000);
 });
 When(/^I fill form with Page Object$/,async function (formYaml) {
@@ -49,8 +46,7 @@ When(/^I fill form with Page Object$/,async function (formYaml) {
                            zip: formData.Zip,                        
                            anual: formData["Annual payment $"],
                            description: formData.Description
-                        });    
-   // await $('#dashboard > div > div > div > form > button').click();
+                        }); 
 });
 When(/^I fill form and check table:$/,async function (formYaml) {
     const formData = YAML.parse(formYaml);
@@ -95,8 +91,7 @@ Then("I check table with email: {string}", async function (email) {
 
 When(/^I fill Subscription form:$/,async function (formYaml) {
     const formData = YAML.parse(formYaml);
-    console.log( {formData} );
-    //await Subscription.createSubscription({years: formData.Years,  total: formData.Total, description: formData.Description });
+    console.log( {formData} );    
     await $('#plan').click();
     if(formData.Plan === "Education"){
     await $('#plan').$('option:nth-child(2)').click();
@@ -156,6 +151,5 @@ Then("I check subscription with email: {string}", async function (email) {
 });
 
 Then("I logOut", async function () {
-    await $('//*[@id="dashboard"]/header/div/div/a[1]').click();
-    await browser.pause(2000);
+    await $('//*[@id="dashboard"]/header/div/div/a[1]').click();    
 });
