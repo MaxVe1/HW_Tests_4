@@ -70,6 +70,27 @@ exports.config = {
         timeout: 0,
         retries: 0
     },
+    cucumberOpts: {
+        scenarioLevelReporter: true,
+        retry: process.env.RETRY || 0,
+        backtrace: true,
+        // requireModule: ['@babel/register'],
+        failAmbiguousDefinitions: true,
+        failFast: false,
+        ignoreUndefinedDefinitions: false,
+        name: [],
+        snippets: true,
+        source: true,
+        profile: [],
+        require: [
+            './features/step_definitions/**/*.js',
+        ],
+        snippetSyntax: undefined,
+        strict: true,
+        tagExpression: 'not @Pending',
+        tagsInTitle: false,
+        timeout: process.env.DBG === '1' ? 600000 : 180000,
+    },
     // Hooks
     // =====
     // WebdriverIO provides several hooks you can use to interfere with the test process in order to enhance
